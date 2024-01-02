@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--<link rel="stylesheet" href="style.css" />-->
+    <title>Loan Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+
+      .container {
+        display: flex;
+        justify-content: space-between;
+        max-width: 1000px;
+        margin: 2rem;
+        padding: 2rem;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        @media (max-width: 650px) {
+          flex-direction: column;
+          margin: 1rem;
+        }
+      }
+
+      .input-section {
+        flex: 1;
+        margin-right: 4rem;
+        @media (max-width: 650px) {
+          margin-right: 1rem;
+        }
+      }
+
+      input[type="number"] {
+        width: 70%;
+        padding: 8px;
+        border: 2px solid #0a3f5c;
+        border-radius: 5px;
+        color: #061f2d;
+        /* Set primary color */
+        transition: border-color 0.5s ease, color 0.5s ease;
+        /* Add transition for smooth color change */
+        @media (max-width: 650px) {
+          font-size: 10px;
+        }
+      }
+
+      input[type="number"]:focus {
+        border: 2px solid #94c43e;
+      }
+
+      .output-section {
+        flex: 1;
+        padding: 20px;
+        color: #0a3f5c;
+        @media (max-width: 650px) {
+          padding-left: 0px;
+        }
+      }
+
+      .input-fields label,
+      .output-fields p {
+        font-weight: bold;
+        font-size: small;
+      }
+
+      .input-fields label {
+        font-size: small;
+        @media (max-width: 650px) {
+          font-size: 12px;
+        }
+        @media (max-width: 500px) {
+          font-size: 12px;
+        }
+      }
+
+      .input-fields input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+      }
+
+      button {
+        background-color: #94c43e;
+        /* Set button color */
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.5s ease;
+        /* Add transition for smooth color change */
+        @media (max-width: 650px) {
+          font-size: 0.8rem;
+        }
+        @media (max-width: 500px) {
+          font-size: 10px;
+          width: 35%;
+          padding: 10px 10px;
+        }
+      }
+
+      button:hover {
+        background-color: #0a3f5c;
+        /* Change button color on hover */
+      }
+
+      h2 {
+        margin-top: 0;
+      }
+
+      .output-field {
+        margin-bottom: 10px;
+        color: #0a3f5c;
+        padding: 0px;
+      }
+
+      .output-fields p {
+        font-size: 1rem;
+        margin-top: 0px;
+        @media (max-width: 768px) {
+          font-size: 1rem;
+          margin-left: 0px;
+        }
+        @media (max-width: 560px) {
+          font-size: 12px;
+        }
+      }
+
+      #monthlyRepayment,
+      #totalRepayment,
+      #interestAmount {
+        font-size: 2rem;
+        @media (max-width: 750px) {
+          font-size: 1.5rem;
+        }
+        @media (max-width: 500px) {
+          font-size: 1.2rem;
+          padding-top: 1rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="input-section">
+        <div class="input-fields">
+          <label for="loanAmount">Loan Amount (KES)</label>
+          <input
+            type="number"
+            id="loanAmount"
+            placeholder="Enter Loan Amount"
+            required
+          />
+          <label for="interestRate">Interest Rate (%)</label>
+          <input
+            type="number"
+            id="interestRate"
+            placeholder="Enter Interest Rate"
+            required
+          />
+          <label for="repaymentPeriod">Repayment Period (Months)</label>
+          <input
+            type="number"
+            id="repaymentPeriod"
+            placeholder="Enter Repayment Period"
+            required
+          />
+          <button id="calculateButton">Calculate</button>
+        </div>
+      </div>
+      <div class="output-section">
+        <div class="output-fields">
+          <p>
+            Monthly Repayment <br />
+            Ksh <span id="monthlyRepayment">0</span>
+          </p>
+          <p>
+            Total Repayment <br />
+            Ksh <span id="totalRepayment">0</span>
+          </p>
+          <p>
+            Interest Amount <br />
+            Ksh
+            <span id="interestAmount">0</span>
+          </p>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const loanAmountInput = document.getElementById("loanAmount");
+        const interestRateInput = document.getElementById("interestRate");
+        const repaymentPeriodInput = document.getElementById("repaymentPeriod");
+        const calculateButton = document.getElementById("calculateButton");
+        const monthlyRepaymentOutput =
+          document.getElementById("monthlyRepayment");
+        const totalRepaymentOutput = document.getElementById("totalRepayment");
+        const interestAmountOutput = document.getElementById("interestAmount");
+
+        calculateButton.addEventListener("click", calculateLoan);
+
+        function formatNumberWithCommas(number) {
+          // Convert the number to a string
+          const numberString = number.toString();
+
+          // Split the string into integer and decimal parts (if any)
+          const parts = numberString.split(".");
+
+          // Add commas to the integer part
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+          // Join the integer and decimal parts (if any) with a period (.)
+          return parts.join(".");
+        }
+
+        function calculateLoan() {
+          const loanAmount = parseFloat(loanAmountInput.value);
+          const interestRate = parseFloat(interestRateInput.value) / 100;
+          const repaymentPeriod = parseInt(repaymentPeriodInput.value);
+
+          const monthlyInterestRate = interestRate / 12;
+          const monthlyPayment =
+            (loanAmount * monthlyInterestRate) /
+            (1 - Math.pow(1 + monthlyInterestRate, -repaymentPeriod));
+          const totalRepayment = monthlyPayment * repaymentPeriod;
+          const interestAmount = totalRepayment - loanAmount;
+
+          monthlyRepaymentOutput.textContent = formatNumberWithCommas(
+            monthlyPayment.toFixed(2)
+          );
+          totalRepaymentOutput.textContent = formatNumberWithCommas(
+            totalRepayment.toFixed(2)
+          );
+          interestAmountOutput.textContent = formatNumberWithCommas(
+            interestAmount.toFixed(2)
+          );
+        }
+      });
+    </script>
+  </body>
+</html>
